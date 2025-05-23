@@ -1,11 +1,16 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
 //import '../background.js'
 import '../testing.js'
 
-
+// Function to get current tab
+async function getTab() {
+  let queries = { active: true, lastFocusedWindow: true };
+  let [tab] = await chrome.tabs.query(queries);
+  return tab;
+}
 
 function App() {
 
@@ -17,6 +22,21 @@ function App() {
     event.preventDefault()
     alert(acceptedWebsite)
   }
+
+  // Get the current tab
+  useEffect(() => {
+    chrome.runtime.sendMessage({ type: 'GET_TAB' }, (response) => {
+      if (chrome.runtime.lastError) {
+        console.error("Runtime error:", chrome.runtime.lastError.message);
+        alert("AAAAA");
+      } else {
+        console.log("Current tab:", response.tab);
+        alert(`Current tab URL: ${response.tab.url}`);
+        alert("OOOOOO");
+      }
+    });
+  }, []);
+  
 
   return (
     <>

@@ -1,4 +1,9 @@
-chrome.runtime.onActivated.addListener(async(activeInfo) => {
+// if activetab
+// get url, if it's acceptable (includes) then continue timer
+
+chrome.runtime.onInstalled.addListener(async(activeInfo) => {
+
+    // on activated doesn't exist??
 
     numSeconds = 0
 
