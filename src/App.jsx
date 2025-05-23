@@ -2,6 +2,10 @@ import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
+//import '../background.js'
+import '../testing.js'
+
+
 
 function App() {
 
@@ -11,7 +15,6 @@ function App() {
 
   const handleSubmit = (event) => {
     event.preventDefault()
-
     alert(acceptedWebsite)
   }
 
@@ -41,9 +44,12 @@ function App() {
 
     </form>
 
+    <p id="TIMER">AAAA</p>
+
           {submittedWebsites.map((site, index) => (
             <li key={index}>{site}</li>
           ))}
+
     
 
   </div>
