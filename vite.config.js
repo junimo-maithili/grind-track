@@ -10,6 +10,9 @@ export default defineConfig({
         {
           src: 'public/manifest.json',
           dest: '.',
+        },
+        { src: 'public/testing.js',
+         dest: '.' 
         }
       ],
     }),
@@ -18,7 +21,8 @@ export default defineConfig({
     outDir: 'build',
     rollupOptions: {
       input: {
-        main: './index.html',
+        input: './index.html',
+        
       },
     },
   },
