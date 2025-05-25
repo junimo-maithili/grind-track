@@ -1,49 +1,16 @@
-// if activetab
-// get url, if it's acceptable (includes) then continue timer
-
-chrome.runtime.onInstalled.addListener(async(activeInfo) => {
-
-    // on activated doesn't exist??
-
-    numSeconds = 0
-
-
-    const currTab = await chrome.tabs.get(activeInfo.tabId);
-   checkValidTab(currTab.url);
-
-    function checkValidTab(url) {
-        chrome.storage.local.get(["acceptedWebsites"], (result) => {
-            const allowedSites = result.acceptedWebsites || [];
-            const isAllowed = allowedSites.some(websiteLink => url.includes(websiteLink))
-
-            if (isAllowed) {
-                // If timer doesn't exist, make one
-                if (!setInterval) {
-                    let timer = setInterval(timerInterval, 1000)
-                    function timerInterval () {
-                        numSeconds++;
-                        //Document.getElementById("TIMER").innerHTML = numSeconds;
-                    }        
-                }
-            } else {
-                if (timerInterval) {
-                    clearInterval(timerInterval);
-                    timerInterval = null;
-                  }
-            }
-
-        return numSeconds;
-    });
-
-    time = numSeconds;
-
-
-
-
-    }
-
-})
-
-async function getTime() {
-    return time;
+// Function to get current tab
+async function getTab() {
+    let queries = { active: true, lastFocusedWindow: true };
+    let [tab] = await chrome.tabs.query(queries);
+    return tab;
 }
+
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message.type === 'GET_TAB') {
+      chrome.tabs.query({ active: true, lastFocusedWindow: true }, (tabs) => {
+        sendResponse({ tab: tabs[0] });
+      });
+      return true;
+    }
+  });
+  

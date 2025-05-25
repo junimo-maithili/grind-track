@@ -11,7 +11,7 @@ export default defineConfig({
           src: 'public/manifest.json',
           dest: '.',
         },
-        { src: 'public/testing.js',
+        { src: 'background.js',
          dest: '.' 
         }
       ],

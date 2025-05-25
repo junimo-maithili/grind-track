@@ -11,7 +11,7 @@
       "<all_urls>"
     ],
     "background": {
-        "service_worker": "testing.js"
+        "service_worker": "background.js"
     }
     
     
