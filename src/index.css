@@ -24,14 +24,6 @@ html, body {
 }
 
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
 
 
 h1 {
@@ -50,29 +42,33 @@ h1 {
   font-weight: 400;
   font-style: normal;
   font-size:40px;
+
+  margin-bottom:20px;
+  
 }
 
 h2 {
   font-size: 17px;
   color:#535bf2;
-  font-weight: 50;
+  font-weight: 60;
   align-items: center;
   font-family: "DynaPuff", system-ui;
-  border-left: -20px;
-  border-right: -20px;
-  border-bottom:30px;
-  border-top:-20px;
+  margin-bottom:-10px;
+  margin-top:-10px
 }
 
 h3 {
-  color: #FF6929;
+  color:#535bf2;
+  font-size:15px;
+  font-weight: 60;
   font-family:"DynaPuff", system-ui;
 }
 
 h4 {
   color: #FF6929;
-  font-size: 15px;
-  font-family:"DynaPuff", system-ui;
+  font-size: 10px;
+  font-size: 4vw;
+  margin-bottom:20px;
 }
 
 h5 {
@@ -81,11 +77,12 @@ h5 {
   font-size:9px;
 }
 
-button {
+.btn {
+  width:60px;
+  font-size: 7px;
   border-radius: 8px;
   border: 1px solid transparent;
-  padding: 5px 5px;
-  font-size: 1em;
+  padding: 3px 3px;
   font-weight: 500;
   font-family: inherit;
   background-color: #61B6CB;
@@ -93,10 +90,11 @@ button {
   transition: border-color 0.25s;
   margin-left: 10px;
   margin-right: 10px;
+  margin-top: 20px;
 }
 button:hover {
   border-color: #FF6929;
-  border-width:10px;
+  border-width:3px;
   color:#646cff;
 }
 button:focus,
@@ -109,10 +107,34 @@ input {
 }
 
 input[type="text"] {
-  background-color: #A0F0EB;
+  background-color: #FFFFFF;
+  color:#61B6CB;
+  max-width: 100px;
+
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
 }
 
-input[type="Submit"] {
-  background-color:#dbc29a;
-  display: inline-block;
+input[type="text"]:active {
+  border:#61B6CB;
+  background-color:#FFFFFF;
+}
+
+input[type="submit"] {
+  font-size: auto;
+  border: 1px solid transparent;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #61B6CB;
+  cursor: pointer;
+  transition: border-color 0.25s;
+
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+  margin-top: -5px;
+}
+
+.addWebsite {
+  flex-direction: row;
+  align-items: center;
 }

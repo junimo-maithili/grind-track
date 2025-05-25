@@ -58,9 +58,13 @@ function App() {
   // Submit button for acceptable websites
   const handleSubmit = (event) => {
     event.preventDefault();
-    const newWebsites = [...submittedWebsites, acceptedWebsite.trim()];
+    const trimmedSite = acceptedWebsite.trim();
+    if (submittedWebsites.includes(trimmedSite)) {
+      return;
+    }
+    const newWebsites = [...submittedWebsites, trimmedSite];
     setSubmittedWebsites(newWebsites);
-    chrome.storage.local.set({ allWebsites: newWebsites }, () => {});
+    chrome.storage.local.set({allWebsites: newWebsites}, () => {});
   }
 
   // Reset button for timer
@@ -78,15 +82,14 @@ function App() {
 
   // Timer logic
   // If website is one of the acceptable websites, start/continue timer
-    const increaseTimer = () => setSeconds(prev => prev + 1);
-    let timeChange;
   useEffect(() => {
     const updateTimer = async () => {
       if (submittedWebsites.some(site => tabUrl.includes(site))) {
+        if (!intervalId) {
         let intervalId = setInterval(() => {
           setSeconds(prev => prev + 1);
         }, 1000);
-        //const timeElapsed = setInterval(increaseTimer, 1000);
+      }
       }
     }
     updateTimer();
@@ -108,34 +111,32 @@ function App() {
       <div>
         <h2>⋆⭒˚.⋆GrindTrack⋆⭒˚.⋆</h2>
         <h1>{formattedTime}</h1>
-        
 
         <form onSubmit={handleSubmit}>
-          
           <br/>
           <h5><br/>═════════════════════</h5>
           <h5>⊹︶︶⊹︶︶୨୧︶︶⊹︶︶⊹︶︶୨୧︶︶⊹︶︶⊹</h5>
 
           <h3>Accepted Websites</h3>
-          
-          <input
-            type="text"
-            id="acceptedWebsites"
-            onChange={(e) => setAcceptedWebsite(e.target.value)}
-            value={acceptedWebsite}
-          />
-          <input
-            type="submit"
-            value="Submit"
-            id="acceptedWebsitesSubmit"
-          />
-
           <h4>{submittedWebsites.length === 0? "No websites submitted": submittedWebsites.join(', ')}</h4>
-
+          
+          <span className="addWesbite">
+            <input
+              type="text"
+              id="acceptedWebsites"
+              onChange={(e) => setAcceptedWebsite(e.target.value)}
+              value={acceptedWebsite}
+            />
+            <input
+              type="submit"
+              value="Submit"
+              id="acceptedWebsitesSubmit"
+            />
+          </span>
         </form>
 
-        <button onClick={resetTimer}>Reset Timer</button>
-        <button onClick={resetWebsites}>Clear Websites</button>
+        <button className="btn" onClick={resetTimer}>Reset Timer</button>
+        <button className="btn" onClick={resetWebsites}>Clear Websites</button>
 
   </div>
     </>
