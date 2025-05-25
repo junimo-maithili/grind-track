@@ -4,7 +4,9 @@
     "version": "1.0.0",
     "description": "A simple React app as a Chrome extension",
     "action": {
-      "default_popup": "index.html"
+      "default_popup": "index.html",
+      "width": 250,
+      "height": 300
     },
     "permissions": ["tabs", "storage", "activeTab", "scripting"],
     "host_permissions": [

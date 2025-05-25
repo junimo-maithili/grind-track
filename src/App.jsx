@@ -1,14 +1,9 @@
-import { useState, useEffect, useRef } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import {useState, useEffect} from 'react'
 import './App.css'
-//import '../background.js'
-//import '../testing.js'
-
-
 
 function App() {
 
+  // Loading in time and acceptable websites from local storage
   chrome.storage.local.get("allWebsites");
   chrome.storage.local.get("seconds");
 
@@ -74,6 +69,7 @@ function App() {
     chrome.storage.local.set({seconds:0});
   }
 
+  // Reset button for websites
   const resetWebsites = () => {
     setSubmittedWebsites([]);
     chrome.storage.local.set({allWebsites:[]});
@@ -82,16 +78,12 @@ function App() {
 
   // Timer logic
   // If website is one of the acceptable websites, start/continue timer
-
-   // If website is one of the acceptable websites, start/continue timer
-    // If website is one of the acceptable websites, start/continue timer
-    // If website is one of the acceptable websites, start/continue timer
     const increaseTimer = () => setSeconds(prev => prev + 1);
     let timeChange;
   useEffect(() => {
     const updateTimer = async () => {
       if (submittedWebsites.some(site => tabUrl.includes(site))) {
-        intervalId = setInterval(() => {
+        let intervalId = setInterval(() => {
           setSeconds(prev => prev + 1);
         }, 1000);
         //const timeElapsed = setInterval(increaseTimer, 1000);
@@ -99,7 +91,6 @@ function App() {
     }
     updateTimer();
   }, [tabUrl, submittedWebsites]);
-  
 
   
   // Save time worked to local storage
@@ -115,10 +106,7 @@ function App() {
   return (
     <>
       <div>
-
-        <h1><br/><br/><br/><br/></h1>
-        <h2>Productivity Tracker</h2>
-        <h4>Time Worked</h4>
+        <h2>GrindTrack</h2>
         <h1>{formattedTime}</h1>
         
         <h2>Goal:</h2>
@@ -139,7 +127,7 @@ function App() {
             id="acceptedWebsitesSubmit"
           />
 
-          <h5>{submittedWebsites.length === 0? "No websites submitted": submittedWebsites.join(', ')}</h5>
+          <h4>{submittedWebsites.length === 0? "No websites submitted": submittedWebsites.join(', ')}</h4>
 
         </form>
 
