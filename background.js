@@ -1,3 +1,6 @@
+let timer = null;
+let seconds = 0;
+
 // Function to get current tab
 async function getTab() {
     let queries = { active: true, lastFocusedWindow: true };
@@ -8,20 +11,24 @@ async function getTab() {
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.type === 'GET_TAB') {
       chrome.tabs.query({ active: true, lastFocusedWindow: true }, (tabs) => {
-        sendResponse({ tab: tabs[0] });
+        sendResponse({tab:tabs[0]});
       });
       return true;
     }
   });
-  
-/*
-chrome.idle.setDetectionInterval(60); // 1 minute
 
-chrome.idle.onStateChanged.addListener((newState) => {
-  // If user isn't using tab or if laptop is closed, stop timer
-  if (newState === "idle" || newState === "locked") {
-    chrome.runtime.sendMessage({type: "STOP_TIMER"})
-    chrome.storage.local.set({ seconds: 0 });
+async function increaseTime() {
+      timer = setInterval(() => {
+        seconds += 1;
+      }, 1000);
+    
+  chrome.storage.local.set({seconds});
+}
+
+chrome.runtime.onMessage.addListener((message) => {
+  if (message.type = "CONTINUE_TIMER") {
+    increaseTime();
   }
+  return;
 });
-*/
+

@@ -56,21 +56,24 @@ function App() {
 
   // Buttons
   // Submit button for acceptable websites
+  let urlObj;
   const handleSubmit = (event) => {
     event.preventDefault();
-    const trimmedSite = acceptedWebsite.trim();
+    let trimmedSite = acceptedWebsite.trim();
+    try {
+      urlObj = new URL(trimmedSite);
+      trimmedSite = urlObj.hostname;
+      alert(trimmedSite);
+
+    } catch {}
+
     if (submittedWebsites.includes(trimmedSite)) {
       return;
     }
+
     const newWebsites = [...submittedWebsites, trimmedSite];
     setSubmittedWebsites(newWebsites);
     chrome.storage.local.set({allWebsites: newWebsites}, () => {});
-  }
-
-  // Reset button for timer
-  const resetTimer = () => {
-    setSeconds(0);
-    chrome.storage.local.set({seconds:0});
   }
 
   // Reset button for websites
@@ -79,27 +82,27 @@ function App() {
     chrome.storage.local.set({allWebsites:[]});
   }
 
+  // Reset button for timer
+  const resetTimer = () => {
+    setSeconds(0);
+    chrome.storage.local.set({seconds:0});
+  }
+
 
   // Timer logic
   // If website is one of the acceptable websites, start/continue timer
+  let interval = null;
   useEffect(() => {
-    const updateTimer = async () => {
-      if (submittedWebsites.some(site => tabUrl.includes(site))) {
-        if (!intervalId) {
-        let intervalId = setInterval(() => {
-          setSeconds(prev => prev + 1);
-        }, 1000);
-      }
-      }
-    }
-    updateTimer();
-  }, [tabUrl, submittedWebsites]);
+    interval = setInterval(() => {
+      chrome.runtime.sendMessage({type:"CONTINUE_TIMER" }, (response) => {
+        chrome.storage.local.get("seconds", (numSeconds) => {
+        setSeconds(numSeconds.seconds)
+      });
+      });
+    }, 1000);
 
-  
-  // Save time worked to local storage
-  useEffect(() => {
-    chrome.storage.local.set({ seconds });
-  }, [seconds]);
+    return () => clearInterval(interval);
+  }, [tabUrl, submittedWebsites]);
 
   let formattedTime = new Date(1000 * seconds).toISOString().substring(11, 19);
 
@@ -134,6 +137,7 @@ function App() {
             />
           </span>
         </form>
+
 
         <button className="btn" onClick={resetTimer}>Reset Timer</button>
         <button className="btn" onClick={resetWebsites}>Clear Websites</button>
