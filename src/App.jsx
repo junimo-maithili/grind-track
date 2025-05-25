@@ -106,14 +106,17 @@ function App() {
   return (
     <>
       <div>
-        <h2>GrindTrack</h2>
+        <h2>⋆⭒˚.⋆GrindTrack⋆⭒˚.⋆</h2>
         <h1>{formattedTime}</h1>
         
-        <h2>Goal:</h2>
-
 
         <form onSubmit={handleSubmit}>
-          <h3>-- Accepted Websites --</h3>
+          
+          <br/>
+          <h5><br/>═════════════════════</h5>
+          <h5>⊹︶︶⊹︶︶୨୧︶︶⊹︶︶⊹︶︶୨୧︶︶⊹︶︶⊹</h5>
+
+          <h3>Accepted Websites</h3>
           
           <input
             type="text"
