@@ -9,9 +9,6 @@ import './App.css'
 
 function App() {
 
-  const timerInterval = useRef(null);  
-
-
   chrome.storage.local.get("allWebsites");
   chrome.storage.local.get("seconds");
 
@@ -61,6 +58,8 @@ function App() {
     });
   }, []);
 
+
+  // Buttons
   // Submit button for acceptable websites
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -69,39 +68,37 @@ function App() {
     chrome.storage.local.set({ allWebsites: newWebsites }, () => {});
   }
 
+  // Reset button for timer
+  const resetTimer = () => {
+    setSeconds(0);
+    chrome.storage.local.set({seconds:0});
+  }
+
+  const resetWebsites = () => {
+    setSubmittedWebsites([]);
+    chrome.storage.local.set({allWebsites:[]});
+  }
+
 
   // Timer logic
   // If website is one of the acceptable websites, start/continue timer
+
+   // If website is one of the acceptable websites, start/continue timer
+    // If website is one of the acceptable websites, start/continue timer
+    // If website is one of the acceptable websites, start/continue timer
+    const increaseTimer = () => setSeconds(prev => prev + 1);
+    let timeChange;
   useEffect(() => {
-    const updateTimer = async (message) => {
-        if (message.type === "STOP_TIMER") {
-          if (timerInterval.current) {
-            clearInterval(timerInterval.current);
-            timerInterval.current = null;
-          }
-        }
-        else if (message.type === "CONTINUE_TIMER") {
-            if (!timerInterval.current && submittedWebsites.some(site => tabUrl.includes(site))) {
-              timerInterval.current = setInterval(() => {
-                setSeconds(prev => prev + 1);
-              }, 1000);
-            }
-          
+    const updateTimer = async () => {
+      if (submittedWebsites.some(site => tabUrl.includes(site))) {
+        intervalId = setInterval(() => {
+          setSeconds(prev => prev + 1);
+        }, 1000);
+        //const timeElapsed = setInterval(increaseTimer, 1000);
       }
     }
-    chrome.runtime.onMessage.addListener(updateTimer);
-
-    // On return, delete the listener and clear the interval (stop increasing)
-    return () => {
-      chrome.runtime.onMessage.removeListener(updateTimer);
-      if (timerInterval.current) {
-        clearInterval(timerInterval.current);
-        timerInterval.current = null;
-      }
-    };
-
-  }, [submittedWebsites, tabUrl]);
-
+    updateTimer();
+  }, [tabUrl, submittedWebsites]);
   
 
   
@@ -110,36 +107,44 @@ function App() {
     chrome.storage.local.set({ seconds });
   }, [seconds]);
 
+  let formattedTime = new Date(1000 * seconds).toISOString().substring(11, 19);
+
+
 
   // Main HTML for app
   return (
     <>
       <div>
 
-        <h1>Productivity Tracker</h1>
-        <h2 id="timeWorked">{seconds}</h2>
+        <h1><br/><br/><br/><br/></h1>
+        <h2>Productivity Tracker</h2>
+        <h4>Time Worked</h4>
+        <h1>{formattedTime}</h1>
+        
         <h2>Goal:</h2>
+
 
         <form onSubmit={handleSubmit}>
           <h3>-- Accepted Websites --</h3>
-          <h5>{submittedWebsites.length === 0? "No websites submitted": submittedWebsites.join(', ')}</h5>
-
+          
           <input
             type="text"
             id="acceptedWebsites"
             onChange={(e) => setAcceptedWebsite(e.target.value)}
             value={acceptedWebsite}
           />
-
           <input
             type="submit"
             value="Submit"
             id="acceptedWebsitesSubmit"
           />
 
+          <h5>{submittedWebsites.length === 0? "No websites submitted": submittedWebsites.join(', ')}</h5>
+
         </form>
 
-
+        <button onClick={resetTimer}>Reset Timer</button>
+        <button onClick={resetWebsites}>Clear Websites</button>
 
   </div>
     </>

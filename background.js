@@ -14,15 +14,14 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     }
   });
   
+/*
 chrome.idle.setDetectionInterval(60); // 1 minute
 
-chrome.idle.onStateChanged.addListener((state) => {
+chrome.idle.onStateChanged.addListener((newState) => {
   // If user isn't using tab or if laptop is closed, stop timer
-  if (state === "idle" || state === "locked") {
-    chrome.runtime.sendMessage({type: "STOP_TIMER"});
+  if (newState === "idle" || newState === "locked") {
+    chrome.runtime.sendMessage({type: "STOP_TIMER"})
+    chrome.storage.local.set({ seconds: 0 });
   }
-  else if (state === "active")
-    chrome.runtime.sendMessage({type: "CONTINUE_TIMER"});
 });
-
-
+*/
