@@ -1,16 +1,16 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
 //import '../background.js'
 //import '../testing.js'
 
-// change this to hours mins secs format later
-function increaseTimer(numSeconds) {
-  return numSeconds + 1;
-}
+
 
 function App() {
+
+  const timerInterval = useRef(null);  
+
 
   chrome.storage.local.get("allWebsites");
   chrome.storage.local.get("seconds");
@@ -69,40 +69,61 @@ function App() {
     chrome.storage.local.set({ allWebsites: newWebsites }, () => {});
   }
 
+
+  // Timer logic
   // If website is one of the acceptable websites, start/continue timer
-    let timeChange;
   useEffect(() => {
-    const updateTimer = async () => {
-      if (submittedWebsites.some(site => tabUrl.includes(site))) {
-        intervalId = setInterval(() => {
-          setSeconds(prev => prev + 1);
-        }, 1000);
-        //const timeElapsed = setInterval(increaseTimer, 1000);
+    const updateTimer = async (message) => {
+        if (message.type === "STOP_TIMER") {
+          if (timerInterval.current) {
+            clearInterval(timerInterval.current);
+            timerInterval.current = null;
+          }
+        }
+        else if (message.type === "CONTINUE_TIMER") {
+            if (!timerInterval.current && submittedWebsites.some(site => tabUrl.includes(site))) {
+              timerInterval.current = setInterval(() => {
+                setSeconds(prev => prev + 1);
+              }, 1000);
+            }
+          
       }
     }
-    updateTimer();
-  }, [tabUrl, submittedWebsites]);
-  
-  
-  //if (submittedWebsites.includes(tabUrl)) {
+    chrome.runtime.onMessage.addListener(updateTimer);
 
-    //setInterval(seconds = increaseTimer(seconds), 1000);
-  //}
-  // Maybe make a button so it can add the current tab
+    // On return, delete the listener and clear the interval (stop increasing)
+    return () => {
+      chrome.runtime.onMessage.removeListener(updateTimer);
+      if (timerInterval.current) {
+        clearInterval(timerInterval.current);
+        timerInterval.current = null;
+      }
+    };
+
+  }, [submittedWebsites, tabUrl]);
+
   
+
+  
+  // Save time worked to local storage
+  useEffect(() => {
+    chrome.storage.local.set({ seconds });
+  }, [seconds]);
+
+
   // Main HTML for app
   return (
     <>
       <div>
 
         <h1>Productivity Tracker</h1>
+        <h2 id="timeWorked">{seconds}</h2>
         <h2>Goal:</h2>
-        <h2>Time worked:</h2>
-        <p>{tabUrl || 'Loading...'}</p>
 
         <form onSubmit={handleSubmit}>
-          <h6>Accepted Websites</h6>
-          <label htmlFor="acceptedWebsites">Productive websites:</label>
+          <h3>-- Accepted Websites --</h3>
+          <h5>{submittedWebsites.length === 0? "No websites submitted": submittedWebsites.join(', ')}</h5>
+
           <input
             type="text"
             id="acceptedWebsites"
@@ -118,9 +139,7 @@ function App() {
 
         </form>
 
-        <h5>Accepted Websites: {submittedWebsites.length === 0? "No websites submitted": submittedWebsites.join(', ')}</h5>
 
-        <h5>{seconds}</h5>
 
   </div>
     </>
