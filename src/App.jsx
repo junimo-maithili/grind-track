@@ -89,15 +89,17 @@ function App() {
   }
 
 
+  
   // Timer logic
   // If website is one of the acceptable websites, start/continue timer
   let interval = null;
   useEffect(() => {
     interval = setInterval(() => {
       chrome.runtime.sendMessage({type:"CONTINUE_TIMER" }, (response) => {
-        chrome.storage.local.get("seconds", (numSeconds) => {
-        setSeconds(numSeconds.seconds)
+      chrome.storage.local.get("seconds", (numSeconds) => {
+      setSeconds(numSeconds.seconds)
       });
+      
       });
     }, 1000);
 

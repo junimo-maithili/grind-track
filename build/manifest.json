@@ -1,19 +1,24 @@
 {
     "manifest_version": 3,
-    "name": "React Chrome Extension",
+    "name": "GrindTrack",
     "version": "1.0.0",
-    "description": "A simple React app as a Chrome extension",
+    "description": "Displays your working time by tracking time spent on productive websites.",
     "action": {
       "default_popup": "index.html",
       "width": 400
     },
-    "permissions": ["tabs", "storage", "activeTab", "scripting"],
+    "permissions": ["tabs", "storage", "activeTab", "scripting", "alarms", "offscreen"],
     "host_permissions": [
       "<all_urls>"
     ],
     "background": {
         "service_worker": "background.js"
-    }
-    
+    },
+    "web_accessible_resources": [
+      {
+        "resources": ["offscreenTimer.html"],
+        "matches": ["<all_urls>"]
+      }
+    ]
     
   }
