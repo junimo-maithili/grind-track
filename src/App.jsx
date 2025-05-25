@@ -4,8 +4,6 @@ import './App.css'
 function App() {
 
   // Loading in time and acceptable websites from local storage
-  chrome.storage.local.get("allWebsites");
-  chrome.storage.local.get("seconds");
 
   // Setting states for websites that are accepted, storing in array
   const [acceptedWebsite, setAcceptedWebsite] = useState("");
@@ -93,18 +91,23 @@ function App() {
   // Timer logic
   // If website is one of the acceptable websites, start/continue timer
   let interval = null;
+  let numMins = 0;
+  
   useEffect(() => {
+    if (sumbittedWebsites.some(site => url.includes(site))) {
+      alert("this is productive!");
+    }
     interval = setInterval(() => {
-      chrome.runtime.sendMessage({type:"CONTINUE_TIMER" }, (response) => {
       chrome.storage.local.get("seconds", (numSeconds) => {
-      setSeconds(numSeconds.seconds)
-      });
-      
-      });
-    }, 1000);
+        if (sumbittedWebsites.some(site => url.includes(site))) {
+          alert("this is productive!");
+          numMins = numSeconds/60;
+        }
+    });
 
     return () => clearInterval(interval);
-  }, [tabUrl, submittedWebsites]);
+  }, 60000);
+ }, [tabUrl, submittedWebsites]);
 
   let formattedTime = new Date(1000 * seconds).toISOString().substring(11, 19);
 
@@ -115,7 +118,7 @@ function App() {
     <>
       <div>
         <h2>⋆⭒˚.⋆GrindTrack⋆⭒˚.⋆</h2>
-        <h1>{formattedTime}</h1>
+        <h1>{numMins}</h1>
 
         <form onSubmit={handleSubmit}>
           <br/>

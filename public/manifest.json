@@ -13,12 +13,6 @@
     ],
     "background": {
         "service_worker": "background.js"
-    },
-    "web_accessible_resources": [
-      {
-        "resources": ["offscreenTimer.html"],
-        "matches": ["<all_urls>"]
-      }
-    ]
-    
+    }
+
   }

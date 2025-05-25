@@ -1,41 +1,32 @@
 let timer = null;
 let seconds = 0;
 
-// Function to get current tab
-async function getTab() {
-    let queries = { active: true, lastFocusedWindow: true };
-    let [tab] = await chrome.tabs.query(queries);
-    return tab;
-}
 
-// Function to create a document to store time worked
-async function getDoc() {
-  const hasDocument = await chrome.offscreen.hasDocument();
-  if (!hasDocument) {
-    await chrome.offscreen.createDocument({
-      url: "offscreenTimer.html",
-      reasons: ["BLOBS"],
-      justification: "Making a timer that runs even when the extension window is closed"
+// Create an alarm if it doesn't exist
+if (!timer) {
+    chrome.alarms.create("CONTINUE_TIMER", {
+      periodInMinutes: 1
     });
-  }
-  console.log("worked");
 }
 
-// Listener, asks for the current time
+// Respond to the alarm by adding a minute to local storage
+timer = chrome.alarms.onAlarm.addListener((alarm) => {
+  if (alarm.name === "CONTINUE_TIMER") {
+    chrome.local.storage.get("seconds", (numSeconds) => {
+      seconds = numSeconds.seconds || 0;
+      chrome.storage.storage.set("seconds", seconds+60)
+    });
+    
+  }
+});
+
+
+// giving current tab
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.type === 'GET_TAB') {
-      chrome.tabs.query({ active: true, lastFocusedWindow: true }, (tabs) => {
+      chrome.tabs.query({active:true, lastFocusedWindow:true }, (tabs) => {
         sendResponse({tab:tabs[0]});
       });
       return true;
     }
   });
-
-getDoc();
-
-chrome.runtime.onMessage.addListener((message) => {
-  if (message.type === "CONTINUE_TIMER") {
-
-  }
-  return true;
-});
