@@ -21,6 +21,7 @@ function App() {
     });
   }, []);
 
+  /*
   // Load the current time worked in
   useEffect(() => {
     chrome.storage.local.get(["seconds"], (result) => {
@@ -30,6 +31,7 @@ function App() {
       }
     });
   }, []);
+  */
 
   // Get the current tab
   useEffect(() => {
@@ -58,6 +60,7 @@ function App() {
   const handleSubmit = (event) => {
     event.preventDefault();
     let trimmedSite = acceptedWebsite.trim();
+    // Only save the domain name
     try {
       urlObj = new URL(trimmedSite);
       trimmedSite = urlObj.hostname;
@@ -65,10 +68,10 @@ function App() {
 
     } catch {}
 
+    // Only add if the website isn't already in the list
     if (submittedWebsites.includes(trimmedSite)) {
       return;
     }
-
     const newWebsites = [...submittedWebsites, trimmedSite];
     setSubmittedWebsites(newWebsites);
     chrome.storage.local.set({allWebsites: newWebsites}, () => {});
@@ -81,55 +84,56 @@ function App() {
   }
 
   // Reset button for timer
-  let startTime;
   const resetTimer = () => {
     setSeconds(0);
-    chrome.storage.local.set({seconds:0});
-    chrome.storage.local.set({startTime:Date.now()});
+    chrome.storage.local.set({startTime:Date.now(), timeElapsed:0});
+
   }
 
 
   
   // Timer logic
-  // If website is one of the acceptable websites, start/continue timer
-  let interval = null;
-  let numMins = 4;
-
-  useEffect(() => {
-    interval = setInterval(() => {
-      if (submittedWebsites.some(site => tabUrl.includes(site))) {
-      chrome.storage.local.get("startTime", (result) => {
-        startTime = result.startTime;
-        // If timer exists, calculate time
-        if (startTime) {
-          const elapsedSeconds = Math.floor((Date.now() - startTime) / 1000);
-          setSeconds(elapsedSeconds);
-        }
-
-      })
-      }
-    });
-  });
   
-  /*
   useEffect(() => {
-    interval = setInterval(() => {
-        if (submittedWebsites.some(site => tabUrl.includes(site))) {
-          chrome.storage.local.get("seconds", (numSeconds) => {
-            numMins = numSeconds.seconds;
-            setSeconds(numMins);
+    chrome.storage.local.get(["timeElapsed"], (result) => {
+      setSeconds(result.timeElapsed || 0);
+    });
 
-          });
-        }
-    }, 1000);
+    const interval = setInterval(() => {
+      if (submittedWebsites.some(site => tabUrl.includes(site))) {
+        chrome.storage.local.get(["startTime", "timeElapsed"], (result) => {
+          let startingTime = result.startTime;
+          let oldTimeElapsed = result.timeElapsed || 0;
 
-    return () => clearInterval(interval);
+          // If startingTime doesn't exist, start timer
+          if (!startingTime) {
+            chrome.storage.local.set({startTime:Date.now()}); 
+          }
 
- }, [tabUrl, submittedWebsites]);
+          // Calculate time passed
+          const elapsedSeconds = Math.floor((Date.now() - startingTime) / 1000) + oldTimeElapsed;
+          setSeconds(elapsedSeconds);
+        });
 
-*/
+      } else {
+        chrome.storage.local.get(["startTime", "timeElapsed"], (result) => {
+          const startingTime = result.startTime || 0;
+          let oldTimeElapsed = result.timeElapsed || 0;
 
-  let formattedTime = new Date(1000 * seconds).toISOString().substring(11, 19);
+          // Recalculating the time elapsed and adding it to storage
+          const elapsedSeconds = Math.floor((Date.now() - startingTime)/1000) + oldTimeElapsed
+          chrome.storage.local.set({timeElapsed:elapsedSeconds, startTime:null});
+
+        });
+      }
+      }, 1000);
+
+      return () => clearInterval(interval);
+    }, [submittedWebsites, tabUrl]);
+  
+  const displayedSeconds = isNaN(seconds)? 0 : seconds;
+  let formattedTime = new Date(1000 * displayedSeconds).toISOString().substring(11, 19);
+
 
 
 
