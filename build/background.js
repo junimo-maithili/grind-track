@@ -3,18 +3,22 @@ let seconds = 0;
 
 
 // Create an alarm if it doesn't exist
-if (!timer) {
+chrome.runtime.onStartup.addListener( () => {
     chrome.alarms.create("CONTINUE_TIMER", {
-      periodInMinutes: 1
+      periodInMinutes: 60
     });
 }
+);
+
+chrome.storage.local.set({startTime:Date.now()});
+
 
 // Respond to the alarm by adding a minute to local storage
-timer = chrome.alarms.onAlarm.addListener((alarm) => {
+chrome.alarms.onAlarm.addListener((alarm) => {
   if (alarm.name === "CONTINUE_TIMER") {
-    chrome.local.storage.get("seconds", (numSeconds) => {
-      seconds = numSeconds.seconds || 0;
-      chrome.storage.storage.set("seconds", seconds+60)
+    chrome.storage.local.get("seconds", (numSeconds) => {
+      allSeconds = numSeconds.seconds || 0;
+      chrome.storage.local.set({"seconds":allSeconds+1});
     });
     
   }

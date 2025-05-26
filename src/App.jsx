@@ -81,9 +81,11 @@ function App() {
   }
 
   // Reset button for timer
+  let startTime;
   const resetTimer = () => {
     setSeconds(0);
     chrome.storage.local.set({seconds:0});
+    chrome.storage.local.set({startTime:Date.now()});
   }
 
 
@@ -91,23 +93,41 @@ function App() {
   // Timer logic
   // If website is one of the acceptable websites, start/continue timer
   let interval = null;
-  let numMins = 0;
-  
+  let numMins = 4;
+
   useEffect(() => {
-    if (sumbittedWebsites.some(site => url.includes(site))) {
-      alert("this is productive!");
-    }
     interval = setInterval(() => {
-      chrome.storage.local.get("seconds", (numSeconds) => {
-        if (sumbittedWebsites.some(site => url.includes(site))) {
-          alert("this is productive!");
-          numMins = numSeconds/60;
+      if (submittedWebsites.some(site => tabUrl.includes(site))) {
+      chrome.storage.local.get("startTime", (result) => {
+        startTime = result.startTime;
+        // If timer exists, calculate time
+        if (startTime) {
+          const elapsedSeconds = Math.floor((Date.now() - startTime) / 1000);
+          setSeconds(elapsedSeconds);
         }
+
+      })
+      }
     });
+  });
+  
+  /*
+  useEffect(() => {
+    interval = setInterval(() => {
+        if (submittedWebsites.some(site => tabUrl.includes(site))) {
+          chrome.storage.local.get("seconds", (numSeconds) => {
+            numMins = numSeconds.seconds;
+            setSeconds(numMins);
+
+          });
+        }
+    }, 1000);
 
     return () => clearInterval(interval);
-  }, 60000);
+
  }, [tabUrl, submittedWebsites]);
+
+*/
 
   let formattedTime = new Date(1000 * seconds).toISOString().substring(11, 19);
 
@@ -118,7 +138,7 @@ function App() {
     <>
       <div>
         <h2>⋆⭒˚.⋆GrindTrack⋆⭒˚.⋆</h2>
-        <h1>{numMins}</h1>
+        <h1>{formattedTime}</h1>
 
         <form onSubmit={handleSubmit}>
           <br/>
