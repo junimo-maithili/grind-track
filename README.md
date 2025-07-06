@@ -1,12 +1,9 @@
-# React + Vite
+GrindTrack is a Chrome Web Extension used to help you track your working time and ensure that you stay focused. Because many students often get sidetracked while working on their computers, GrindTrack helps them hold themselves accountable and actually get stuff done.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Users can submit URLs to websites they find productive. Whenever they are on one of these websites, a timer will start. However, when they get sidetracked and open another tab with something irrelevant, they will be urged to go do work.
 
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+To download the project and run it locally, you need to:
+1. Clone the repository.
+2. Install the dependencies (npm install).
+3. Build the extension (npm run build). This will make a folder titled "build".
+4. Add it to Google Chrome by going to chrome://extensions/, then enable Developer Mode and click "Load unpacked". Click the "build" folder and upload it.
