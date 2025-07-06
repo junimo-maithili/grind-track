@@ -10,6 +10,7 @@ function App() {
   const [submittedWebsites, setSubmittedWebsites] = useState([])
   const [tabUrl, setTabUrl] = useState('');
   const [seconds, setSeconds] = useState(0);
+  let prod = true;
 
   // Load the acceptable websites in
   useEffect(() => {
@@ -100,19 +101,16 @@ function App() {
 
       } else {
         chrome.storage.local.get(["startTime", "timeElapsed"], (result) => {
-          const startingTime = result.startTime ?? 0;
-          let oldTimeElapsed = result.timeElapsed ?? 0;
-          
+          const startingTime = result.startTime || 0;
+          let oldTimeElapsed = result.timeElapsed || 0;
+          /*
           // Recalculating the time elapsed and adding it to storage
-          if (startingTime != 0) {
-          const sessionElapsed = Math.floor((Date.now() - startingTime) / 1000);
-          const totalElapsed = sessionElapsed + oldTimeElapsed;
-
-          chrome.storage.local.set({timeElapsed:totalElapsed, startTime: 0});
-          
+          if (startingTime) {
+            const elapsedSeconds = Math.floor((Date.now() - startingTime)/1000) + oldTimeElapsed
+            chrome.storage.local.set({timeElapsed:elapsedSeconds, startTime:0});
             setSeconds(elapsedSeconds)
           }
-          
+          */
 
         });
       }
@@ -122,10 +120,17 @@ function App() {
     }, [submittedWebsites, tabUrl]);
   
     const validSeconds = isNaN(seconds) ? 0 : seconds;
-    let formattedTime = "00:00:00";
-    if (!isNaN(validSeconds)) {
+    
+    let formattedTime = "loading...";
+
+    const isOnProductiveSite = submittedWebsites.some(site => tabUrl.includes(site));
+
+    if (!isOnProductiveSite) {
+      formattedTime = "lock in.";
+    } else if (!isNaN(seconds)) {
       formattedTime = new Date(validSeconds * 1000).toISOString().substring(11, 19);
     }
+    
 
 
 
