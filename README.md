@@ -1,3 +1,5 @@
+[![Athena Award Badge](https://img.shields.io/endpoint?url=https%3A%2F%2Faward.athena.hackclub.com%2Fapi%2Fbadge)](https://award.athena.hackclub.com?utm_source=readme)
+
 GrindTrack is a Chrome Web Extension used to help you track your working time and ensure that you stay focused. Because many students often get sidetracked while working on their computers, GrindTrack helps them hold themselves accountable and actually get stuff done.
 
 Users can submit URLs to websites they find productive. Whenever they are on one of these websites, a timer will start. However, when they get sidetracked and open another tab with something irrelevant, they will be urged to go do work.
