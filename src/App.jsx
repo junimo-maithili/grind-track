@@ -21,18 +21,6 @@ function App() {
     });
   }, []);
 
-  /*
-  // Load the current time worked in
-  useEffect(() => {
-    chrome.storage.local.get(["seconds"], (result) => {
-      // If the timer exists, load the time in
-      if (result.seconds) {
-        setSeconds(result.seconds);
-      }
-    });
-  }, []);
-  */
-
   // Get the current tab
   useEffect(() => {
     // If there's a runtime error, send an alert (debugging)
@@ -89,22 +77,17 @@ function App() {
 
   }
 
-
-  
   // Timer logic
   
   useEffect(() => {
-    chrome.storage.local.get(["timeElapsed"], (result) => {
-      setSeconds(result.timeElapsed || 0);
-    });
-
+    
     const interval = setInterval(() => {
       if (submittedWebsites.some(site => tabUrl.includes(site))) {
         chrome.storage.local.get(["startTime", "timeElapsed"], (result) => {
           let startingTime = result.startTime || 0;
           let oldTimeElapsed = result.timeElapsed || 0;
 
-          // If startingTime doesn't exist, start timer
+          // If startingTime doesn't exist, start timer by setting a new startingTime
           if (!startingTime) {
             chrome.storage.local.set({startTime:Date.now()}); 
           } else {
@@ -117,15 +100,19 @@ function App() {
 
       } else {
         chrome.storage.local.get(["startTime", "timeElapsed"], (result) => {
-          const startingTime = result.startTime || 0;
-          let oldTimeElapsed = result.timeElapsed || 0;
-
+          const startingTime = result.startTime ?? 0;
+          let oldTimeElapsed = result.timeElapsed ?? 0;
+          
           // Recalculating the time elapsed and adding it to storage
-          if (startingTime) {
-            const elapsedSeconds = Math.floor((Date.now() - startingTime)/1000) + oldTimeElapsed
-            chrome.storage.local.set({timeElapsed:elapsedSeconds, startTime:0});
+          if (startingTime != 0) {
+          const sessionElapsed = Math.floor((Date.now() - startingTime) / 1000);
+          const totalElapsed = sessionElapsed + oldTimeElapsed;
+
+          chrome.storage.local.set({timeElapsed:totalElapsed, startTime: 0});
+          
             setSeconds(elapsedSeconds)
           }
+          
 
         });
       }
@@ -137,7 +124,7 @@ function App() {
     const validSeconds = isNaN(seconds) ? 0 : seconds;
     let formattedTime = "00:00:00";
     if (!isNaN(validSeconds)) {
-      formattedTime = new Date(1 * 1000).toISOString().substring(11, 19);
+      formattedTime = new Date(validSeconds * 1000).toISOString().substring(11, 19);
     }
 
 
