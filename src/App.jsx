@@ -64,7 +64,6 @@ function App() {
     try {
       urlObj = new URL(trimmedSite);
       trimmedSite = urlObj.hostname;
-      alert(trimmedSite);
 
     } catch {}
 
@@ -102,17 +101,18 @@ function App() {
     const interval = setInterval(() => {
       if (submittedWebsites.some(site => tabUrl.includes(site))) {
         chrome.storage.local.get(["startTime", "timeElapsed"], (result) => {
-          let startingTime = result.startTime;
+          let startingTime = result.startTime || 0;
           let oldTimeElapsed = result.timeElapsed || 0;
 
           // If startingTime doesn't exist, start timer
           if (!startingTime) {
             chrome.storage.local.set({startTime:Date.now()}); 
-          }
+          } else {
 
           // Calculate time passed
           const elapsedSeconds = Math.floor((Date.now() - startingTime) / 1000) + oldTimeElapsed;
           setSeconds(elapsedSeconds);
+          }
         });
 
       } else {
@@ -121,8 +121,11 @@ function App() {
           let oldTimeElapsed = result.timeElapsed || 0;
 
           // Recalculating the time elapsed and adding it to storage
-          const elapsedSeconds = Math.floor((Date.now() - startingTime)/1000) + oldTimeElapsed
-          chrome.storage.local.set({timeElapsed:elapsedSeconds, startTime:null});
+          if (startingTime) {
+            const elapsedSeconds = Math.floor((Date.now() - startingTime)/1000) + oldTimeElapsed
+            chrome.storage.local.set({timeElapsed:elapsedSeconds, startTime:0});
+            setSeconds(elapsedSeconds)
+          }
 
         });
       }
@@ -131,9 +134,11 @@ function App() {
       return () => clearInterval(interval);
     }, [submittedWebsites, tabUrl]);
   
-  const displayedSeconds = isNaN(seconds)? 0 : seconds;
-  let formattedTime = new Date(1000 * displayedSeconds).toISOString().substring(11, 19);
-
+    const validSeconds = isNaN(seconds) ? 0 : seconds;
+    let formattedTime = "00:00:00";
+    if (!isNaN(validSeconds)) {
+      formattedTime = new Date(1 * 1000).toISOString().substring(11, 19);
+    }
 
 
 
